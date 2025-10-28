@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Task from "../models/task.model";
 import paginationHelper from "../../../helpers/pagination";
+import searchHelper from "../../../helpers/search";
 
 // [GET] /api/v1/tasks
 export const index = async (req: Request, res: Response) => {
@@ -8,6 +9,7 @@ export const index = async (req: Request, res: Response) => {
   interface Find {
     deleted: boolean;
     status?: string;
+    title?: RegExp;
   }
 
   let find: Find = {
@@ -18,6 +20,14 @@ export const index = async (req: Request, res: Response) => {
     find.status = req.query.status.toString();
   }
   // End Find
+
+  // Search
+  let objectSearch = searchHelper(req.query);
+
+  if (req.query.keyword) {
+    find.title = objectSearch.regex;
+  }
+  // End Search
 
   let sort = {};
 
